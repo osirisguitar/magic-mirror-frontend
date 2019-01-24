@@ -1,6 +1,8 @@
 # magic-mirror-frontend
 Magic mirror info display with face recognition. A magic mirror (in this context) is a two-way mirror with a computer screen whose text shines through the mirror and is superimposed with the mirror image.
 
+This repo is named frontend but is actually full stack.
+
 ### Try it out
 Go to http://localhost:5656/train.html to train faces (change name to train on multiple people). This will be converted to a mobile web page using stills from the mobile camera (since the mirror will have no way of accepting input from the user, other than showing a face to the camera)
 
