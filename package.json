@@ -1,0 +1,25 @@
+{
+  "name": "magic-mirror-frontend",
+  "version": "1.0.0",
+  "description": "Magic mirror info display with face recognition",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osirisguitar/magic-mirror-frontend.git"
+  },
+  "author": "Anders Norrback Bornholm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/osirisguitar/magic-mirror-frontend/issues"
+  },
+  "homepage": "https://github.com/osirisguitar/magic-mirror-frontend#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "face-detection": "^0.1.5",
+    "face-recognition": "^0.9.4"
+  }
+}

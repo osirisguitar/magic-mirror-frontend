@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+  <title>Magic mirror</title>
+</head>
+<body>
+    <video autoplay playsinline muted id="webcam" width="400" height="300"></video>
+
+    <canvas id="webcamImage" width="400" height="300"></canvas>
+    <input type="text" id="personName" value="Anders">
+
+    <button id="snap">Learn</button>
+    <button id="find">Recognize</button>
+
+    <h2 id="person">Noone</h2>
+
+    <script src="train/index.js"></script>
+</body>
