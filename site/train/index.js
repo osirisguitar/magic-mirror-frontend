@@ -93,4 +93,4 @@ setInterval(() => {
         document.getElementById('person').innerText = 'Noone';
       }
     });
-}, 1000);
+}, 2000);

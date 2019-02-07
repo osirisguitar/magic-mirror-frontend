@@ -88,7 +88,28 @@ function clearPersonalData () {
   document.getElementById('calendarItems').innerHTML = '';
 }
 
-setInterval(() => {
+function getTrains () {
+  var fetchOptions = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  return fetch('trains', fetchOptions)
+    .then(response => {
+      return response.json();
+    })
+    .then(json => {
+      let trainData = JSON.parse(json);
+      document.getElementById('trains').innerText = trainData.displayText;
+    });
+}
+
+/*setInterval(() => {
   var webcam = document.getElementById('webcam');
   var context = webcamImage.getContext('2d');
   context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight);
@@ -107,4 +128,10 @@ setInterval(() => {
         return clearPersonalData();
       }
     });
-}, 2000);
+}, 2000);*/
+
+setInterval(() => {
+  getTrains();
+}, 60000);
+
+getTrains();

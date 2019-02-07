@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const faceService = require('./lib/services/faceService');
 const userService = require('./lib/services/userService');
+const publicDataService = require('./lib/services/publicDataService');
 
 app.use(express.static('site'));
 app.use('/images', express.static('images'));
@@ -44,6 +45,12 @@ app.get('/personaldata', async (req, res) => {
   var userData = userService.getPersonalData();
 
   res.json(userData);
+});
+
+app.get('/trains', async (req, res) => {
+  var trainData = await publicDataService.getTrainDepartures();
+  console.log(trainData);
+  res.json(trainData);
 });
 
 app.listen(5656, () => {
