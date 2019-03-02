@@ -109,7 +109,7 @@ function getTrains () {
     });
 }
 
-/*setInterval(() => {
+setInterval(() => {
   var webcam = document.getElementById('webcam');
   var context = webcamImage.getContext('2d');
   context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight);
@@ -128,10 +128,33 @@ function getTrains () {
         return clearPersonalData();
       }
     });
-}, 2000);*/
+}, 5000);
 
 setInterval(() => {
   getTrains();
 }, 60000);
 
 getTrains();
+
+function createTrainingQR ()  {
+  var fetchOptions = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  return fetch('trainingurl', fetchOptions)
+    .then(response => {
+      return response.json()
+    })
+    .then(json => {
+      let url = json.url
+      QRCode.toCanvas(document.getElementById('QRcanvas'), url, function (error) {})
+    })
+}
+
+createTrainingQR()
