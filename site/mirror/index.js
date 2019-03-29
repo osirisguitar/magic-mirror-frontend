@@ -11,11 +11,6 @@ if (navigator.getUserMedia) {
     { video: true },
     stream => {
       webcamElement.srcObject = stream;
-      /*      this.webcamElement.addEventListener('loadeddata', async () => {
-              this.adjustVideoSize(
-                this.webcamElement.videoWidth,
-                this.webcamElement.videoHeight);
-              })*/
     },
     error => {
       console.error('oh noes')
@@ -54,7 +49,7 @@ function getPersonalData() {
     }
   };
 
-  return fetch('personaldata', fetchOptions)
+  return fetch('personaldata?id=' + currentUser, fetchOptions)
     .then(response => {
       return response.json();
     })
@@ -73,11 +68,19 @@ var currentUser = null;
 function showPersonalData () {
   return getPersonalData()
     .then(personalData => {
-      if (personalData.meetings) {
+      document.getElementById('person').innerText = personalData.profile.given_name;
+
+      if (personalData.data.events) {
         document.getElementById('calendarItems').innerHTML = '';
-        personalData.meetings.forEach(meeting => {
+        personalData.data.events.forEach(event => {
           var meetingListItem = document.createElement('li');
-          meetingListItem.innerHTML = meeting.startTime + ' - ' + meeting.endTime + ': ' + meeting.heading;
+          let itemHtml = '<i class="far fa-calendar-alt"></i><div>' + event.start + ' - ' + event.end + '</div>' + '<div class="eventTitle">' + event.title;
+          if (event.location) {
+            itemHtml += '<div class="eventLocation">' + event.location + '</div>'
+          }
+          itemHtml += '</div>'
+
+          meetingListItem.innerHTML = itemHtml
           document.getElementById('calendarItems').appendChild(meetingListItem);
         });
       }
@@ -118,8 +121,8 @@ setInterval(() => {
     .then(person => {
       if (person.className) {
         if (person.className != currentUser) {
-          document.getElementById('person').innerText = person.className;
           currentUser = person.className;
+          console.log('current user is now', currentUser)
           return showPersonalData();
         }
       } else {
@@ -153,7 +156,7 @@ function createTrainingQR ()  {
     })
     .then(json => {
       let url = json.url
-      QRCode.toCanvas(document.getElementById('QRcanvas'), url, function (error) {})
+      QRCode.toCanvas(document.getElementById('QRcanvas'), url, { scale: 2}, function (error) {})
     })
 }
 

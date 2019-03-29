@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <title>Mirror</title>
     <style>
       body {
@@ -24,19 +26,58 @@
       }
 
       #left, #right {
+        padding-top:100px;
         width: 25%;
       }
 
+      #middle {
+        text-align: center;
+      }
+
       h1 {
-        font-size: 3em;
+        font-size: 4em;
       }
 
       h2 {
-        font-size: 2em;
+        font-size: 2.5em;
       }
 
       h3 {
         font-size: 1.5em;
+      }
+
+      ul {
+        padding-left: 0;
+      }
+
+      #calendarItems li {
+        padding-bottom: 10px;
+      }
+
+      #calendarItems i {
+        font-size: 2.5em;
+        float:left;
+        padding-right: 5px;
+      }
+
+      #calendarItems .eventTitle {
+        font-size: 1.4em;
+        font-weight: bold;
+      }
+
+      #calendarItems .eventTitle .eventLocation {
+        font-size: 0.6em;
+        font-weight: normal;
+        font-style: italic
+      }
+
+      #qr {
+        position: fixed;
+        bottom: 0;
+      }
+
+      #widget_yr, #widget_detail_div {
+        display: none;
       }
     </style>
   </head>
@@ -44,6 +85,12 @@
     <div id="left">
       <div id="weather">
         <h2>Väder</h3>
+          <div id='wrapper-YJER'><span id='h2-YJER'><a id='url-YJER' href="//www.vackertvader.se/huddinge"> Huddinge</a></span>
+            <div id='load-YJER'></div><a id='url_detail-YJER' href="//www.vackertvader.se/huddinge">Detaljerad prognos</a>
+          </div>
+          <script type="text/javascript"
+            src="//widget.vackertvader.se/widgetv3/widget_request/2704620?bgcolor=000000&border=none&days=2&key=-YJER&lang=&maxtemp=no&size=x120&textcolor=ffffff&unit=C&wind=no"
+            charset="utf-8"></script>
       </div>
       <div id="calendar">
         <h2>Kalender</h3>
@@ -51,8 +98,8 @@
 
         </ul>
       </div>
-      <div>
-        <canvas id="QRcanvas"></canvas>
+      <div id="qr">
+        <canvas id="QRcanvas" width="50" height="50"></canvas>
       </div>
     </div>
     <div id="middle">

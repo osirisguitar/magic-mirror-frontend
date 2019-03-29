@@ -1,5 +1,13 @@
 'use strict';
 
+let params = new URLSearchParams(location.search)
+const givenName = params.get('givenname')
+const familyName = params.get('familyname')
+const userId = params.get('id')
+
+document.getElementById('givenName').innerHTML = givenName
+document.getElementById('familyName').innerHTML = familyName
+
 document.getElementById('snap').addEventListener('click', () => {
   document.getElementById('cam').click();
 });
@@ -33,7 +41,7 @@ document.getElementById('cam').addEventListener('change', e => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name: document.getElementById('personName').value, imagedata: imageData })
+      body: JSON.stringify({ id: userId, imagedata: imageData })
     };
 
     return fetch('train', fetchOptions)
