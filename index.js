@@ -5,8 +5,12 @@ const faceService = require('./lib/services/faceService')
 const publicDataService = require('./lib/services/publicDataService')
 const { google } = require('googleapis')
 const googleCalendar = google.calendar('v3')
-const config = require('./config.json')
+const config = {
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET
+}
 const ifaces = require('os').networkInterfaces()
+const path = require('path')
 
 const serverAddresses = []
 
@@ -16,7 +20,8 @@ Object.keys(ifaces).forEach(ifaceName => {
   iface.forEach(setting => {
     if ('IPv4' === setting.family && setting.internal === false) {
       // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-      serverAddresses.push(`http://mirrordev.bornholm.se:${5656}`)
+      serverAddresses.push(`https://mirror.bornholm.se`)
+//      serverAddresses.push(`http://${setting.address}:${5656}`)
     }
   })
 })
@@ -31,6 +36,8 @@ google.options({ auth: oauth2Client });
 
 const userService = require('./lib/services/userService')(oauth2Client)
 
+console.log('dirname', __dirname)
+//app.use(express.static(path.join(__dirname, '../site')));
 app.use(express.static('site'));
 app.use('/images', express.static('images'));
 app.use(bodyParser.json({ limit: '50mb' }));

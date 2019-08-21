@@ -113,6 +113,8 @@ function getTrains () {
 }
 
 setInterval(() => {
+  document.getElementById('time').innerHTML = moment().format('HH:mm')
+
   var webcam = document.getElementById('webcam');
   var context = webcamImage.getContext('2d');
   context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight);
@@ -157,6 +159,7 @@ function createTrainingQR ()  {
     .then(json => {
       let url = json.url
       QRCode.toCanvas(document.getElementById('QRcanvas'), url, { scale: 2}, function (error) {})
+      document.getElementById('qrlink').href = url
     })
 }
 

@@ -51,7 +51,7 @@
       }
 
       #calendarItems li {
-        padding-bottom: 10px;
+        padding-bottom: 30px;
       }
 
       #calendarItems i {
@@ -84,7 +84,6 @@
   <body>
     <div id="left">
       <div id="weather">
-        <h2>Väder</h3>
           <div id='wrapper-YJER'><span id='h2-YJER'><a id='url-YJER' href="//www.vackertvader.se/huddinge"> Huddinge</a></span>
             <div id='load-YJER'></div><a id='url_detail-YJER' href="//www.vackertvader.se/huddinge">Detaljerad prognos</a>
           </div>
@@ -99,16 +98,18 @@
         </ul>
       </div>
       <div id="qr">
-        <canvas id="QRcanvas" width="50" height="50"></canvas>
+        <a href="" id="qrlink">
+          <canvas id="QRcanvas" width="50" height="50"></canvas>
+        </a>
       </div>
     </div>
     <div id="middle">
       <h1 id="person">Gäst</h1>
-      <video autoplay playsinline muted id="webcam" width="400" height="300" style="visibility: hidden;"></video>
+      <video autoplay playsinline muted id="webcam" width="400" height="300" style="xvisibility: hidden;"></video>
     </div>
     <div id="right">
       <div>
-        <h2>Restid</h3>
+        <h2 id="time"></h2>
         <div>
           <h3>Till jobbet</h4>
         </div>
@@ -122,6 +123,8 @@
       </div>
     </div>
     <script src="mirror/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+      integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
     <script src="mirror/index.js"></script>
   </body>
 </html>
