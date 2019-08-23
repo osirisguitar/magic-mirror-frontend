@@ -61,6 +61,7 @@ app.post('/recognize', async (req, res) => {
   try {
     var result = await faceService.recognize(imageBase64, filename);
     if (result && result[0]) {
+      console.log(result[0])
       res.json(result[0]);
     } else {
       res.json({});
