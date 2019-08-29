@@ -1,0 +1,46 @@
+<html>
+  <head>
+  <script src="https://bundle.run/pixelmatch@5.0.2"></script>
+  </head>
+  <body>
+    <video autoplay playsinline muted id="webcam" width="400" height="300" style="xvisibility: hidden;"></video>
+    <script>
+      const webcamElement = document.getElementById('webcam');
+
+      const navigatorAny = navigator;
+      navigator.getUserMedia = navigator.getUserMedia ||
+        navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+        navigatorAny.msGetUserMedia;
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia(
+          { video: true },
+          stream => {
+            webcamElement.srcObject = stream;
+          },
+          error => {
+            console.error('oh noes')
+          })
+      }
+
+      let webcamImage = document.createElement('canvas');
+      webcamImage.id = 'webcamImage';
+      webcamImage.width = 400;
+      webcamImage.height = 300;
+      let previousImageData = null
+
+      const detectChange = () => {
+        let context = webcamImage.getContext('2d');
+        context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
+        let imageData = context.getImageData(0, 0, webcamImage.width, webcamImage.height)
+        if (previousImageData) {
+          let result = pixelmatch(imageData.data, previousImageData.data, null, webcamImage.width, webcamImage.height, { threshold: 0.1 });
+          console.log(result)
+        }
+
+        previousImageData = imageData
+      }
+
+      setInterval(detectChange, 2000)
+    </script>
+  </body>
+</html>

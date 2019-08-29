@@ -112,36 +112,78 @@ function getTrains () {
     });
 }
 
-setInterval(() => {
+const clearActivePerson = () => {
+  document.getElementById('person').innerText = 'Gäst';
+  document.getElementById('faceDetected').classList.remove('visible')
+  document.getElementById('faceDetected').classList.add('invisible')
+  currentUser = null
+  return clearPersonalData()
+}
+
+const checkForFaces = async () => {
+  console.log('Checking for faces')
   document.getElementById('time').innerHTML = moment().format('HH:mm')
 
   var webcam = document.getElementById('webcam');
-  var context = webcamImage.getContext('2d');
-  context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight);
-  var imageDataUrl = webcamImage.toDataURL();
-  return recognize(imageDataUrl)
-    .then(person => {
-      if (person.className) {
-        if (person.className != currentUser) {
-          currentUser = person.className;
-          console.log('current user is now', currentUser)
-          return showPersonalData();
+  console.log('Set time and retrieved webcam', webcam)
+  const detections = await faceapi.detectSingleFace(webcam, new faceapi.TinyFaceDetectorOptions())
+  //const detections = await faceapi.detectSingleFace(webcam)
+
+  console.log('detections', detections)
+
+  if (detections) {
+    document.getElementById('faceDetected').classList.remove('invisible')
+    document.getElementById('faceDetected').classList.add('visible')
+
+    if (!currentUser) {
+      let context = webcamImage.getContext('2d');
+      context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
+      var imageDataUrl = webcamImage.toDataURL()
+      return recognize(imageDataUrl)
+        .then(async person => {
+          if (person.className) {
+            if (person.className != currentUser) {
+              currentUser = person.className
+              await showPersonalData()
+            }
+          } else {
+            clearActivePerson()
+          }
+
+          setTimeout(checkForFaces, 2000)    
+        });
+    } else {
+      setTimeout(checkForFaces, 2000)
+    }
+  } else {
+    clearActivePerson()
+    setTimeout(checkForFaces, 2000)
+}
+
+/*  if (detections && detections.length > 0 && !currentUser) {
+    document.getElementById('faceDetected').classList.add('visible')
+
+    var context = webcamImage.getContext('2d');
+    context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
+    var imageDataUrl = webcamImage.toDataURL()
+    return recognize(imageDataUrl)
+      .then(person => {
+        if (person.className) {
+          if (person.className != currentUser) {
+            currentUser = person.className
+            personDetected = true
+            return showPersonalData()
+          }
+        } else {
+          return clearActivePerson()
         }
-      } else {
-        document.getElementById('person').innerText = 'Gäst';
-        currentUser = null;
-        return clearPersonalData();
-      }
-    });
-}, 5000);
+      });
+  } else {
+    clearActivePerson()
+  }*/
+}
 
-setInterval(() => {
-  getTrains();
-}, 60000);
-
-getTrains();
-
-function createTrainingQR ()  {
+const createTrainingQR = () => {
   var fetchOptions = {
     method: 'GET',
     mode: 'cors',
@@ -158,9 +200,30 @@ function createTrainingQR ()  {
     })
     .then(json => {
       let url = json.url
-      QRCode.toCanvas(document.getElementById('QRcanvas'), url, { scale: 2}, function (error) {})
+      QRCode.toCanvas(document.getElementById('QRcanvas'), url, { scale: 2 }, function (error) { })
       document.getElementById('qrlink').href = url
     })
 }
 
-createTrainingQR()
+setInterval(() => {
+  getTrains();
+}, 60000);
+
+const initialize = async () => {
+  await faceapi.nets.tinyFaceDetector.loadFromUri('mirror/models')
+  await faceapi.nets.ssdMobilenetv1.loadFromUri('mirror/models')
+  console.log('model loaded')
+
+  setTimeout(checkForFaces, 5000)
+  getTrains()
+  createTrainingQR()
+}
+
+if (
+  document.readyState === "complete" ||
+  (document.readyState !== "loading" && !document.documentElement.doScroll)
+) {
+  initialize()
+} else {
+  document.addEventListener("DOMContentLoaded", initialize)
+}
