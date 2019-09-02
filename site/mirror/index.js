@@ -1,5 +1,7 @@
 'use strict';
 
+moment.locale('sv')
+
 const webcamElement = document.getElementById('webcam');
 
 const navigatorAny = navigator;
@@ -71,10 +73,18 @@ function showPersonalData () {
       document.getElementById('person').innerText = personalData.profile.given_name;
 
       if (personalData.data.events) {
-        document.getElementById('calendarItems').innerHTML = '';
+        document.getElementById('calendarItems').innerHTML = ''
         personalData.data.events.forEach(event => {
-          var meetingListItem = document.createElement('li');
-          let itemHtml = '<i class="far fa-calendar-alt"></i><div>' + event.start + ' - ' + event.end + '</div>' + '<div class="eventTitle">' + event.title;
+          let meetingListItem = document.createElement('li')
+          let meetingDate = moment(event.date)
+          let itemHtml = '<div>'
+          if (meetingDate.isSame(moment(), 'day')) {
+            itemHtml += 'Idag '
+          } else {
+            let dayName = meetingDate.format('dddd')
+            itemHtml += dayName.charAt(0).toUpperCase() + dayName.slice(1) + ' '
+          }
+          itemHtml += event.startTime + ' - ' + event.endTime + '</div>' + '<div class="eventTitle">' + event.title;
           if (event.location) {
             itemHtml += '<div class="eventLocation">' + event.location + '</div>'
           }
@@ -112,76 +122,79 @@ function getTrains () {
     });
 }
 
+const getFood = feeds => {
+  let parser = new RSSParser();
+
+  let feedHtml = '<h2>Skolmat</h2>'
+
+  feeds.forEach(async feed => {
+    let feedContents = await parser.parseURL('https://cors-anywhere.herokuapp.com/' + feed);
+    console.log(JSON.stringify(feedContents, null, 2))
+
+    if (feedContents.items.length > 0) {
+      feedHtml += '<h3>' + feedContents.title.slice(12) + '</h3>'
+      feedHtml += '<div>' + feedContents.items[0].title + '<br>' + feedContents.items[0].content + '</div>'
+    }
+    // Horrible async handling, make this a reduce instead.
+    document.getElementById('feeds').innerHTML = feedHtml
+  })
+}
+
+const renderRSSItems = items => {
+  console.log(JSON.stringify(items, null, 2))
+}
+
 const clearActivePerson = () => {
   document.getElementById('person').innerText = 'Gäst';
-  document.getElementById('faceDetected').classList.remove('visible')
-  document.getElementById('faceDetected').classList.add('invisible')
   currentUser = null
   return clearPersonalData()
 }
 
-const checkForFaces = async () => {
-  console.log('Checking for faces')
-  document.getElementById('time').innerHTML = moment().format('HH:mm')
+let previousImageData
 
-  var webcam = document.getElementById('webcam');
-  console.log('Set time and retrieved webcam', webcam)
-  const detections = await faceapi.detectSingleFace(webcam, new faceapi.TinyFaceDetectorOptions())
-  //const detections = await faceapi.detectSingleFace(webcam)
+const checkForMotion = () => {
+  document.getElementById('time').innerHTML = '<div id="date">' + moment().format('YYYY-mm-DD') + '</div><div id="time">' + moment().format('HH:mm') + '</div>'
 
-  console.log('detections', detections)
+  console.log('Check for motion')
 
-  if (detections) {
-    document.getElementById('faceDetected').classList.remove('invisible')
-    document.getElementById('faceDetected').classList.add('visible')
-
-    if (!currentUser) {
-      let context = webcamImage.getContext('2d');
-      context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
-      var imageDataUrl = webcamImage.toDataURL()
-      return recognize(imageDataUrl)
-        .then(async person => {
-          if (person.className) {
-            if (person.className != currentUser) {
-              currentUser = person.className
-              await showPersonalData()
-            }
-          } else {
-            clearActivePerson()
-          }
-
-          setTimeout(checkForFaces, 2000)    
-        });
-    } else {
-      setTimeout(checkForFaces, 2000)
-    }
-  } else {
-    clearActivePerson()
-    setTimeout(checkForFaces, 2000)
-}
-
-/*  if (detections && detections.length > 0 && !currentUser) {
-    document.getElementById('faceDetected').classList.add('visible')
-
-    var context = webcamImage.getContext('2d');
+  if (!currentUser) {
+    let context = webcamImage.getContext('2d');
     context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
-    var imageDataUrl = webcamImage.toDataURL()
-    return recognize(imageDataUrl)
-      .then(person => {
-        if (person.className) {
-          if (person.className != currentUser) {
-            currentUser = person.className
-            personDetected = true
-            return showPersonalData()
-          }
-        } else {
-          return clearActivePerson()
-        }
-      });
-  } else {
-    clearActivePerson()
-  }*/
+    let imageData = context.getImageData(0, 0, webcamImage.width, webcamImage.height)
+    if (previousImageData) {
+      let result = pixelmatch(imageData.data, previousImageData.data, null, webcamImage.width, webcamImage.height, { threshold: 0.1 });
+      if (result > 10000) {
+        document.getElementById('person').innerHTML = 'Gäst <i class="fas fa-eye"></i>'
+        console.log('Detected:', result)
+        checkForFaces()
+      }
+    }
+
+    previousImageData = imageData
+  }
 }
+
+const checkForFaces = async () => {
+  let webcam = document.getElementById('webcam');
+
+  let context = webcamImage.getContext('2d');
+  context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
+  var imageDataUrl = webcamImage.toDataURL()
+
+  return recognize(imageDataUrl)
+    .then(async person => {
+      if (person.className) {
+        if (person.className != currentUser) {
+          currentUser = person.className
+          await showPersonalData()
+        }
+
+        setTimeout(checkForFaces, 5000)    
+      } else {
+        clearActivePerson()
+      }
+    });
+  }
 
 const createTrainingQR = () => {
   var fetchOptions = {
@@ -205,17 +218,23 @@ const createTrainingQR = () => {
     })
 }
 
+let feeds = [
+  'https://skolmaten.se/stenmoskolan/rss/days/?limit=1',
+  'https://skolmaten.se/furuhojden/rss/days/?limit=1'
+]
+
 setInterval(() => {
-  getTrains();
-}, 60000);
+  getTrains()
+}, 60000)
+
+setInterval(() => {
+  getFood(feeds)
+}, 600000)
 
 const initialize = async () => {
-  await faceapi.nets.tinyFaceDetector.loadFromUri('mirror/models')
-  await faceapi.nets.ssdMobilenetv1.loadFromUri('mirror/models')
-  console.log('model loaded')
-
-  setTimeout(checkForFaces, 5000)
+  setInterval(checkForMotion, 1000)
   getTrains()
+  getFood(feeds)
   createTrainingQR()
 }
 

@@ -30,19 +30,30 @@
         width: 25%;
       }
 
+      #left {
+        margin-left: 20px;
+      }
+
+      #right {
+        margin-right: 20px;
+      }
+
       #middle {
         text-align: center;
       }
 
       h1 {
         font-size: 4em;
+        text-transform: uppercase;
       }
 
       h2 {
+        text-transform: uppercase;
         font-size: 2.5em;
       }
 
       h3 {
+        text-transform: uppercase;
         font-size: 1.5em;
       }
 
@@ -87,16 +98,36 @@
       .invisible {
         display: none;
       }
+      
+      #date {
+        font-size: 0.5em;
+      }
+
+      #weather {
+        margin-left: -12px;
+      }
+
+      #url-YJER {
+        text-transform: uppercase;
+      }
+
+      a.rss-item {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2em;
+        margin-top: 5px;
+      }
     </style>
   </head>
   <body>
     <div id="left">
       <div id="weather">
-          <div id='wrapper-YJER'><span id='h2-YJER'><a id='url-YJER' href="//www.vackertvader.se/huddinge"> Huddinge</a></span>
-            <div id='load-YJER'></div><a id='url_detail-YJER' href="//www.vackertvader.se/huddinge">Detaljerad prognos</a>
+          <div id='wrapper-YJER'><span id='h2-YJER'><a id='url-YJER' href="//www.vackertvader.se/stockholm">Stockholm</a></span>
+            <div id='load-YJER'></div><a id='url_detail-YJER' href="//www.vackertvader.se/stockholm">Detaljerad prognos</a>
           </div>
           <script type="text/javascript"
-            src="//widget.vackertvader.se/widgetv3/widget_request/2704620?bgcolor=000000&border=none&days=2&key=-YJER&lang=&maxtemp=no&size=x120&textcolor=ffffff&unit=C&wind=no"
+            src="//widget.vackertvader.se/widgetv3/widget_request/2673730?bgcolor=000000&border=none&days=2&key=-YJER&lang=&maxtemp=no&size=x120&textcolor=ffffff&unit=C&wind=no"
             charset="utf-8"></script>
       </div>
       <div id="calendar">
@@ -114,20 +145,33 @@
     <div id="middle">
       <h1 id="person">Gäst</h1>
       <i id="faceDetected" class="fas fa-user-check invisible"></i>
-      <video autoplay playsinline muted id="webcam" width="400" height="300" style="xvisibility: hidden;"></video>
+      <video autoplay playsinline muted id="webcam" width="400" height="300" style="visibility: hidden;"></video>
     </div>
     <div id="right">
       <div>
         <h2 id="time"></h2>
-        <div>
+        <!-- <div>
           <h3>Till jobbet</h4>
         </div>
         <div>
           <h3>Till nästa möte</h4>
-        </div>
+        </div> -->
         <div>
           <h3>Nästa pendeltåg</h4>
           <div id="trains"></div>
+        </div>
+        <div id="feeds">
+          <h3>Mat Stenmo</h4>
+          <div></div>
+
+          <script language="JavaScript"
+            src="http://feed2js.org//feed2js.php?src=https%3A%2F%2Fskolmaten.se%2Fstenmoskolan%2Frss%2Fweeks&num=2&utf=y&html=a"
+            charset="UTF-8" type="text/javascript"></script>
+          <h3>Mat Furuhöjden</h4>
+          <div></div>
+            <script language="JavaScript"
+              src="http://feed2js.org//feed2js.php?src=https%3A%2F%2Fskolmaten.se%2Fstenmoskolan%2Frss%2Fweeks&num=2&utf=y&html=a"
+              charset="UTF-8" type="text/javascript"></script>
         </div>
       </div>
     </div>
@@ -135,6 +179,9 @@
     <script src="https://bundle.run/pixelmatch@5.0.2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
       integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/sv.js"
+      integrity="sha256-YU0OUWNXwbPuT6iKMn3l+f4/2GkjXQ1oziq3IAhoOJM=" crossorigin="anonymous"></script>
+    <script src="mirror/rss-parser.min.js"></script>
     <script src="mirror/index.js"></script>
   </body>
 </html>

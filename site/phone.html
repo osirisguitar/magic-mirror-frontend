@@ -35,6 +35,8 @@
     }
   </style>
   <meta name="viewport" content="width = device-width">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"
+    integrity="sha256-dhm9R4pgGAdElt/Z8BnKk9fsaEtqSz11u0+FwCIXHy4=" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -45,6 +47,8 @@
   <input type="text" id="personName" value="Anders">
   <img id="picture">
   <input type="submit" id="snap" value="Learn Face">
+
+  <div id='exif'></div>
 
   <canvas id="webcamImage" width="400" height="400"></canvas>
 
