@@ -19,7 +19,7 @@
   "dependencies": {
     "async-request": "^1.2.0",
     "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "face-recognition": "^0.9.4",
     "google-oauth2-node": "0.0.3",
     "googleapis": "42.0.0",
