@@ -5,6 +5,7 @@ const faceService = require('./lib/services/faceService')
 const publicDataService = require('./lib/services/publicDataService')
 const { google } = require('googleapis')
 const googleCalendar = google.calendar('v3')
+require('dotenv').config()
 const config = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -12,7 +13,7 @@ const config = {
 const ifaces = require('os').networkInterfaces()
 const path = require('path')
 
-const serverAddresses = []
+const serverAddresses = ['dev-local.bornholm.se']
 
 Object.keys(ifaces).forEach((ifaceName) => {
   const iface = ifaces[ifaceName]
@@ -61,8 +62,9 @@ app.post('/recognize', async (req, res) => {
   try {
     var result = await faceService.recognize(imageBase64, filename)
     if (result && result[0]) {
-      console.log(result[0])
-      res.json(result[0])
+      const user = await userService.getUserFromImageName(result[0]._label)
+      console.log(user)
+      res.json(user)
     } else {
       res.json({})
     }
@@ -138,6 +140,15 @@ const getGoogleUserProfile = async (oauth2Client) => {
 }
 
 app.listen(5656, async () => {
-  await faceService.initialize()
+  await userService.initialize()
+  const users = await userService.getUsers()
+
+  console.log('users', users)
+
+  images = Object.keys(users).map((userId) => {
+    return users[userId].photo
+  })
+
+  await faceService.initialize(images)
   console.log('http://localhost:5656')
 })
