@@ -72,8 +72,7 @@ var currentUser = null
 
 function showPersonalData() {
   return getPersonalData().then((personalData) => {
-    document.getElementById('person').innerText =
-      personalData.profile.given_name
+    document.getElementById('person').innerText = personalData.profile.firstName
 
     if (personalData.data && personalData.data.events) {
       document.getElementById('calendarItems').innerHTML = ''
@@ -140,7 +139,6 @@ const getFood = (feeds) => {
     let feedContents = await parser.parseURL(
       'https://cors-anywhere.herokuapp.com/' + feed
     )
-    console.log(JSON.stringify(feedContents, null, 2))
 
     if (feedContents.items.length > 0) {
       feedHtml += '<h3>' + feedContents.title.slice(12) + '</h3>'
@@ -216,10 +214,10 @@ const checkForFaces = async () => {
   var imageDataUrl = webcamImage.toDataURL()
 
   return recognize(imageDataUrl).then(async (person) => {
-    console.log('found', person, person.className)
-    if (person.className) {
-      if (person.className != currentUser) {
-        currentUser = person.className
+    console.log('found', person, person.id)
+    if (person.id) {
+      if (person.id != currentUser) {
+        currentUser = person.id
         await showPersonalData()
       }
 

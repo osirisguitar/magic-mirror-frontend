@@ -27,14 +27,9 @@ if (navigator.getUserMedia) {
     { video: true },
     (stream) => {
       webcamElement.srcObject = stream
-      /*      this.webcamElement.addEventListener('loadeddata', async () => {
-        this.adjustVideoSize(
-          this.webcamElement.videoWidth,
-          this.webcamElement.videoHeight);
-        })*/
     },
     (error) => {
-      console.error('oh noes')
+      console.error('oh noes', error.message)
     }
   )
 }
@@ -92,10 +87,9 @@ setInterval(() => {
   var context = document.getElementById('webcamImage').getContext('2d')
   context.drawImage(webcam, 0, 0, webcam.clientWidth, webcam.clientHeight)
   var imageDataUrl = document.getElementById('webcamImage').toDataURL()
-  //var imageData = context.getImageData(0, 0, 400, 300);
   return recognize(imageDataUrl).then((person) => {
-    if (person.className) {
-      document.getElementById('person').innerText = person.className
+    if (person.id) {
+      document.getElementById('person').innerText = person.id
     } else {
       document.getElementById('person').innerText = 'Noone'
     }

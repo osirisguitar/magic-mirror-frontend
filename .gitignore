@@ -70,3 +70,4 @@ model.json
 config.json
 start-local.sh
 data/
+*.pem
