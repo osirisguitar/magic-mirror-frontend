@@ -8,38 +8,19 @@ const https = require('https')
 const googleCalendar = google.calendar('v3')
 require('dotenv').config()
 const fs = require('fs')
-const { auth } = require('googleapis/build/src/apis/abusiveexperiencereport')
 const config = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
+  serverUrl: process.env.SERVER_URL,
 }
-const ifaces = require('os').networkInterfaces()
 
-const serverAddresses = ['fenrir.bornholm.se:5656']
+const oauth2Client = new google.auth.OAuth2(
+  config.clientId,
+  config.clientSecret,
+  config.serverUrl + '/googlecallback'
+)
 
-let oauth2Client
-
-Object.keys(ifaces).forEach((ifaceName) => {
-  const iface = ifaces[ifaceName]
-
-  iface.forEach((setting) => {
-    if ('IPv4' === setting.family && setting.internal === false) {
-      // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-      //      serverAddresses.push(`https://mirror.bornholm.se`)
-      serverAddresses.push(`https://${setting.address}:${5656}`)
-    }
-  })
-
-  oauth2Client = new google.auth.OAuth2(
-    config.clientId,
-    config.clientSecret,
-    'https://' + serverAddresses[0] + '/googlecallback'
-  )
-
-  console.log(serverAddresses[0] + '/googlecallback')
-
-  google.options({ auth: oauth2Client })
-})
+google.options({ auth: oauth2Client })
 
 const userService = require('./lib/services/userService')(oauth2Client)
 
@@ -52,7 +33,8 @@ app.post('/train', async (req, res) => {
   var imageBase64 = req.body.imagedata.split(',')[1]
 
   try {
-    var result = await faceService.train(imageBase64, req.body.id)
+    const fileName = await faceService.train(imageBase64, req.body.id)
+    await userService.addPhoto(req.body.id, fileName)
     res.json({ success: true })
   } catch (err) {
     res.json({ error: 'Could not train face', message: err.message })
@@ -67,7 +49,6 @@ app.post('/recognize', async (req, res) => {
     var result = await faceService.recognize(imageBase64, filename)
     if (result && result[0]) {
       const user = await userService.getUserFromImageName(result[0]._label)
-      console.log(user)
       res.json(user)
     } else {
       res.json({})
@@ -108,7 +89,6 @@ app.get('/google', async (req, res, next) => {
 })
 
 app.get('/googlecallback', async (req, res, next) => {
-  console.log('google callback')
   var authCode = req.query.code
 
   try {
@@ -154,7 +134,7 @@ const httpsOptions = {
   cert: fs.readFileSync('./cert.pem'),
 }
 
-const server = https.createServer(httpsOptions, app).listen(5656, async () => {
+https.createServer(httpsOptions, app).listen(5656, async () => {
   await userService.initialize()
   const users = await userService.getUsers()
 
@@ -163,5 +143,4 @@ const server = https.createServer(httpsOptions, app).listen(5656, async () => {
   })
 
   await faceService.initialize(images)
-  console.log('http://localhost:5656')
 })

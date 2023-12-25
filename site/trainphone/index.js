@@ -51,7 +51,7 @@ document.getElementById('cam').addEventListener('change', async (e) => {
 
     // iOS and Android both upload portrait photos rotated 90 degrees - but to different directions
     if (orientation === 6) {
-      context.rotate(Math.PI / 2)
+      //context.rotate(Math.PI / 2)
     } else if (orientation === 8) {
       context.rotate(-Math.PI / 2)
     }
