@@ -14,9 +14,10 @@ RUN npm install --production
 
 COPY ./lib /app/lib
 COPY ./site /app/site
+COPY ./model /app/model
 COPY ./index.js /app/
 
-RUN mkdir -p /app/data
+RUN mkdir -p /app/images
 
 CMD node index.js
 

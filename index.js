@@ -36,6 +36,7 @@ app.post('/train', async (req, res) => {
   try {
     const fileName = await faceService.train(imageBase64, req.body.id)
     await userService.addPhoto(req.body.id, fileName)
+    await initialize()
     res.json({ success: true })
   } catch (err) {
     res.json({ error: 'Could not train face', message: err.message })
