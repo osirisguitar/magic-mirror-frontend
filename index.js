@@ -5,6 +5,7 @@ const faceService = require('./lib/services/faceService')
 const publicDataService = require('./lib/services/publicDataService')
 const { google } = require('googleapis')
 const https = require('https')
+const http = require('http')
 const googleCalendar = google.calendar('v3')
 require('dotenv').config()
 const fs = require('fs')
@@ -129,12 +130,7 @@ const getGoogleUserProfile = async (oauth2Client) => {
   })
 }
 
-const httpsOptions = {
-  key: fs.readFileSync('./key.pem'),
-  cert: fs.readFileSync('./cert.pem'),
-}
-
-https.createServer(httpsOptions, app).listen(5656, async () => {
+const initialize = async () => {
   await userService.initialize()
   const users = await userService.getUsers()
 
@@ -143,4 +139,15 @@ https.createServer(httpsOptions, app).listen(5656, async () => {
   })
 
   await faceService.initialize(images)
-})
+}
+
+if (process.env.USE_HTTPS) {
+  const httpsOptions = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+  }
+
+  https.createServer(httpsOptions, app).listen(5656, initialize)
+} else {
+  app.listen(5656, initialize)
+}
